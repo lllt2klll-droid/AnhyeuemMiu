@@ -1,0 +1,718 @@
+/* ==========================================================
+   QUỲNH 20/10 — A LITTLE GARDEN OF LOVE
+   Design System & Styling
+   ========================================================== */
+
+:root {
+  /* Day Theme Palette */
+  --bg-day-gradient: radial-gradient(circle at 50% 35%, #FFFDF9 0%, #FFF4E8 60%, #FBE5D8 100%);
+  --text-day-primary: #3D2B24;
+  --text-day-secondary: #7A6258;
+  --card-day-bg: rgba(255, 253, 248, 0.88);
+  --card-day-border: rgba(235, 215, 200, 0.6);
+  --btn-day-bg: rgba(255, 255, 255, 0.85);
+  --btn-day-hover: #FFFFFF;
+  --btn-day-text: #5A3E31;
+  --shadow-day: 0 12px 35px rgba(180, 130, 110, 0.15), 0 4px 12px rgba(0, 0, 0, 0.04);
+  
+  /* Night Theme Palette */
+  --bg-night-gradient: radial-gradient(circle at 50% 30%, #1E293B 0%, #0F172A 65%, #080D1A 100%);
+  --text-night-primary: #F8FAFC;
+  --text-night-secondary: #94A3B8;
+  --card-night-bg: rgba(23, 32, 51, 0.88);
+  --card-night-border: rgba(71, 85, 105, 0.5);
+  --btn-night-bg: rgba(30, 41, 59, 0.85);
+  --btn-night-hover: #334155;
+  --btn-night-text: #E2E8F0;
+  --shadow-night: 0 14px 40px rgba(0, 0, 0, 0.5), 0 4px 15px rgba(30, 58, 138, 0.2);
+
+  /* Shared Accents */
+  --accent-pink: #F78DA7;
+  --accent-rose: #E63946;
+  --accent-gold: #FFB800;
+  --accent-blue: #4A9BE8;
+  --accent-green: #5B925D;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* App Container */
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: background 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-container.day-mode {
+  background: var(--bg-day-gradient);
+  color: var(--text-day-primary);
+}
+
+.app-container.night-mode {
+  background: var(--bg-night-gradient);
+  color: var(--text-night-primary);
+}
+
+/* 3D Canvas Container */
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  touch-action: none;
+}
+
+.canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  outline: none;
+  cursor: grab;
+}
+
+.canvas-container canvas:active {
+  cursor: grabbing;
+}
+
+/* Floating Top Header */
+.top-header {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  max-width: 90%;
+  animation: fadeInDown 1.2s ease-out;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+}
+
+.day-mode .header-badge {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(235, 215, 200, 0.8);
+  color: #7D4A38;
+  box-shadow: 0 4px 15px rgba(200, 160, 140, 0.15);
+}
+
+.night-mode .header-badge {
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(71, 85, 105, 0.6);
+  color: #CBD5E1;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.header-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-top: 8px;
+  letter-spacing: -0.3px;
+  transition: color 0.5s ease;
+}
+
+.header-subtitle {
+  font-size: 0.92rem;
+  font-weight: 500;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+/* Floating Bottom Controls & Hints */
+.floating-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 24px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.control-group {
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+/* Icon Buttons */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.day-mode .icon-btn {
+  background: var(--btn-day-bg);
+  border: 1px solid var(--card-day-border);
+  color: var(--btn-day-text);
+}
+
+.night-mode .icon-btn {
+  background: var(--btn-night-bg);
+  border: 1px solid var(--card-night-border);
+  color: var(--btn-night-text);
+}
+
+.icon-btn:hover {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.icon-btn:active {
+  transform: translateY(1px) scale(0.95);
+}
+
+/* Hint Pill in Center Bottom */
+.bottom-hint-pill {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulseGentle 3s infinite;
+}
+
+.day-mode .bottom-hint-pill {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(230, 205, 190, 0.8);
+  color: #6B4232;
+  box-shadow: 0 6px 22px rgba(180, 130, 110, 0.18);
+}
+
+.night-mode .bottom-hint-pill {
+  background: rgba(30, 41, 59, 0.82);
+  border: 1px solid rgba(71, 85, 105, 0.7);
+  color: #E2E8F0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.bottom-hint-pill:hover {
+  transform: translateY(-2px);
+}
+
+/* Flower Modal / Card (Side or Centered) */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 24px;
+}
+
+.modal-backdrop-click {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: fadeIn 0.3s ease;
+}
+
+.flower-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  overflow-y: auto;
+  pointer-events: auto;
+  border-radius: 28px;
+  padding: 28px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: cardSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 25;
+}
+
+.day-mode .flower-card {
+  background: var(--card-day-bg);
+  border: 1px solid var(--card-day-border);
+  box-shadow: var(--shadow-day);
+  color: var(--text-day-primary);
+}
+
+.night-mode .flower-card {
+  background: var(--card-night-bg);
+  border: 1px solid var(--card-night-border);
+  box-shadow: var(--shadow-night);
+  color: var(--text-night-primary);
+}
+
+.flower-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.flower-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.card-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(150, 150, 150, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
+.card-close-btn:hover {
+  background: rgba(150, 150, 150, 0.25);
+  transform: rotate(90deg);
+}
+
+.flower-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flower-badge-tag {
+  align-self: flex-start;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 2px;
+}
+
+.flower-name {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.flower-subtitle {
+  font-size: 0.96rem;
+  font-weight: 600;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.flower-meaning-box {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 500;
+  background: rgba(180, 180, 180, 0.08);
+  border-left: 3px solid var(--accent-pink);
+}
+
+.flower-message-text {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  font-weight: 500;
+  white-space: pre-line;
+  opacity: 0.95;
+}
+
+.flower-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-mode .btn-secondary {
+  background: #EEDFD5;
+  color: #4A3026;
+}
+
+.night-mode .btn-secondary {
+  background: #334155;
+  color: #F1F5F9;
+}
+
+.btn-secondary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   LOVE LETTER MODAL (CHIẾC NƠ)
+   ========================================================== */
+.letter-modal-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.letter-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 10, 8, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: auto;
+  animation: fadeIn 0.4s ease;
+}
+
+.letter-paper {
+  position: relative;
+  z-index: 35;
+  pointer-events: auto;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #FFFDF7;
+  color: #3B2A22;
+  border-radius: 24px;
+  padding: 38px 34px 34px 34px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(220, 195, 175, 0.4);
+  animation: letterOpen 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Paper subtle border lines */
+.letter-paper::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px dashed rgba(210, 180, 155, 0.5);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.letter-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(220, 190, 170, 0.2);
+  color: #7A5747;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.letter-close-btn:hover {
+  background: rgba(220, 190, 170, 0.4);
+  transform: rotate(90deg);
+}
+
+.letter-header-decor {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.letter-stamp {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(210, 120, 100, 0.3));
+}
+
+.letter-date {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #9C7A68;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.letter-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #532C1E;
+  margin-top: 4px;
+  letter-spacing: -0.3px;
+}
+
+.letter-content-body {
+  font-size: 1.02rem;
+  line-height: 1.8;
+  color: #423028;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.letter-paragraph {
+  text-indent: 1.5em;
+}
+
+.letter-paragraph:first-child {
+  text-indent: 0;
+  font-weight: 600;
+}
+
+.letter-signature {
+  align-self: flex-end;
+  margin-top: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #C0392B;
+  font-style: italic;
+}
+
+/* Interactive Flower Tooltip / Highlight indicator */
+.interaction-hint-toast {
+  position: absolute;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+  animation: fadeIn 0.5s ease;
+  transition: all 0.3s ease;
+}
+
+.day-mode .interaction-hint-toast {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(235, 215, 200, 0.8);
+  color: #6E4636;
+  box-shadow: 0 4px 15px rgba(180, 130, 110, 0.15);
+}
+
+.night-mode .interaction-hint-toast {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(71, 85, 105, 0.7);
+  color: #E2E8F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -15px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes letterOpen {
+  from {
+    opacity: 0;
+    transform: translateY(35px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseGentle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .top-header {
+    top: 14px;
+    width: 92%;
+  }
+
+  .header-title {
+    font-size: 1.25rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .floating-controls {
+    bottom: 16px;
+    padding: 0 16px;
+  }
+
+  .bottom-hint-pill {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+
+  .modal-overlay {
+    justify-content: center;
+    align-items: flex-end;
+    padding: 14px;
+  }
+
+  .flower-card {
+    max-height: 72vh;
+    padding: 22px 20px;
+    border-radius: 24px;
+  }
+
+  @keyframes cardSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .letter-paper {
+    padding: 26px 20px 22px 20px;
+    max-height: 84vh;
+  }
+
+  .letter-title {
+    font-size: 1.35rem;
+  }
+
+  .letter-content-body {
+    font-size: 0.94rem;
+    line-height: 1.65;
+  }
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
