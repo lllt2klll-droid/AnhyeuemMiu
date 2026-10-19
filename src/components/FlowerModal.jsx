@@ -73,7 +73,7 @@ export function FlowerModal({ flowerId, onClose }) {
         {/* Footer */}
         <div className="flower-card-footer">
           <button className="btn-secondary" onClick={onClose}>
-            Tiếp tục ngắm hoa ♡
+            Còn nhiều lời thương đang chờ em ♡
           </button>
         </div>
       </div>

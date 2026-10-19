@@ -76,6 +76,22 @@ export function createBouquet() {
   leaf5.rotation.set(0.32, -0.28, -0.64);
   bouquet.add(leaf5);
 
+  // Extra foliage layered behind the flowers to fill gaps against the wrapping.
+  const rearLeafConfigs = [
+    { x: -1.28, y: -0.48, z: -0.08, width: 0.5, length: 1.15, rz: 0.62, light: true },
+    { x: -0.72, y: -0.82, z: -0.06, width: 0.46, length: 1.08, rz: -0.42 },
+    { x: -0.08, y: -0.92, z: -0.08, width: 0.52, length: 1.22, rz: 0.12, light: true },
+    { x: 0.62, y: -0.82, z: -0.06, width: 0.48, length: 1.12, rz: -0.38 },
+    { x: 1.22, y: -0.58, z: -0.08, width: 0.5, length: 1.16, rz: -0.58, light: true }
+  ];
+
+  rearLeafConfigs.forEach(({ x, y, z, width, length, rz, light = false }) => {
+    const leaf = createLeaf(materials, width, length, light);
+    leaf.position.set(x, y, z);
+    leaf.rotation.set(0.18, 0, rz);
+    bouquet.add(leaf);
+  });
+
   // 4. Closed Lily Bud (Top Right)
   const lilyBud = createLilyBud(materials);
   lilyBud.position.set(1.36, 1.95, 0.12);

@@ -20,6 +20,53 @@ function tagFlower(object, flowerId, flowerType) {
   });
 }
 
+export function updateFlowerSway(bouquet, delta, rotationVelocity) {
+  let flowerIndex = 0;
+
+  for (const flower of bouquet.children) {
+    if (!flower.userData.isInteractive || flower.userData.flowerType === 'green-leaf') {
+      continue;
+    }
+
+    if (!flower.userData.sway) {
+      flower.userData.sway = {
+        baseRotation: flower.rotation.clone(),
+        angleX: 0,
+        angleY: 0,
+        angleZ: 0,
+        velocityX: 0,
+        velocityY: 0,
+        velocityZ: 0,
+        response: 1 + (flowerIndex % 5) * 0.12
+      };
+    }
+
+    const sway = flower.userData.sway;
+    const targetX = THREE.MathUtils.clamp(rotationVelocity.pitch * 0.045 * sway.response, -0.26, 0.26);
+    const targetY = THREE.MathUtils.clamp(rotationVelocity.yaw * 0.022 * sway.response, -0.14, 0.14);
+    const targetZ = THREE.MathUtils.clamp(-rotationVelocity.yaw * 0.045 * sway.response, -0.26, 0.26);
+    const spring = 32;
+    const damping = Math.exp(-7 * delta);
+
+    sway.velocityX += (targetX - sway.angleX) * spring * delta;
+    sway.velocityY += (targetY - sway.angleY) * spring * delta;
+    sway.velocityZ += (targetZ - sway.angleZ) * spring * delta;
+    sway.velocityX *= damping;
+    sway.velocityY *= damping;
+    sway.velocityZ *= damping;
+    sway.angleX += sway.velocityX * delta;
+    sway.angleY += sway.velocityY * delta;
+    sway.angleZ += sway.velocityZ * delta;
+
+    flower.rotation.set(
+      sway.baseRotation.x + sway.angleX,
+      sway.baseRotation.y + sway.angleY,
+      sway.baseRotation.z + sway.angleZ
+    );
+    flowerIndex++;
+  }
+}
+
 /**
  * 1. SUNFLOWER (Hoa hướng dương)
  * Central showpiece: bright yellow petals, domed brown center with beaded texture
@@ -136,11 +183,11 @@ export function createLily(materials) {
 
   // 6 Petals: 3 outer, 3 inner slightly smaller
   const lilyPetalGeom = createLilyPetalGeometry({
-    width: 0.58,
-    length: 1.38,
+    width: 0.68,
+    length: 1.3,
     depth: 0.05,
     bevel: 0.038,
-    curl: 0.36
+    curl: 0.22
   });
 
   for (let i = 0; i < 6; i++) {
@@ -155,7 +202,7 @@ export function createLily(materials) {
       isInner ? 0.04 : -0.02
     );
     petal.rotation.z = angle - Math.PI / 2;
-    petal.rotation.x = isInner ? 0.42 : 0.48; // arch outwards
+    petal.rotation.x = isInner ? 0.28 : 0.32;
     if (isInner) {
       petal.scale.set(0.92, 0.94, 0.95);
     }
@@ -246,86 +293,100 @@ export function createLilyBud(materials) {
 
 /**
  * 3. RED ROSE (Hoa hồng đỏ)
- * Chibi vinyl layered petals: center tight spiral with overlapping cupped petals
+ * Rounded, overlapping petals form the folded spiral shape of a rose
  */
+function createRosePetalGeometry({ width, length, depth, bevel, curl }) {
+  const shape = new THREE.Shape();
+  const halfWidth = width / 2;
+
+  shape.moveTo(0, -length * 0.5);
+  shape.bezierCurveTo(
+    halfWidth * 0.9, -length * 0.28,
+    halfWidth * 1.05, length * 0.12,
+    halfWidth * 0.88, length * 0.32
+  );
+  shape.bezierCurveTo(
+    halfWidth * 0.78, length * 0.5,
+    halfWidth * 0.28, length * 0.56,
+    0, length * 0.48
+  );
+  shape.bezierCurveTo(
+    -halfWidth * 0.28, length * 0.56,
+    -halfWidth * 0.78, length * 0.5,
+    -halfWidth * 0.88, length * 0.32
+  );
+  shape.bezierCurveTo(
+    -halfWidth * 1.05, length * 0.12,
+    -halfWidth * 0.9, -length * 0.28,
+    0, -length * 0.5
+  );
+
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    steps: 1,
+    depth,
+    bevelEnabled: true,
+    bevelThickness: bevel,
+    bevelSize: bevel,
+    bevelSegments: 4
+  });
+  geometry.center();
+
+  const position = geometry.attributes.position;
+  for (let i = 0; i < position.count; i++) {
+    const x = position.getX(i);
+    const y = position.getY(i);
+    const across = Math.min(Math.abs(x) / halfWidth, 1);
+    const along = THREE.MathUtils.clamp((y + length * 0.5) / length, 0, 1);
+    const bowl = (across * across * 0.07) - Math.sin(along * Math.PI) * (1 - across) * curl;
+    position.setZ(i, position.getZ(i) + bowl);
+  }
+
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 export function createRose(materials) {
   const group = new THREE.Group();
 
-  // Base calyx
-  const calyxGeom = new THREE.CylinderGeometry(0.32, 0.12, 0.25, 16);
+  const calyxGeom = new THREE.CylinderGeometry(0.34, 0.12, 0.25, 16);
   calyxGeom.rotateX(Math.PI / 2);
   const calyx = new THREE.Mesh(calyxGeom, materials.leafGreen);
   calyx.position.z = -0.18;
   group.add(calyx);
 
-  // Center spiral bud core
-  const centerSphere = new THREE.SphereGeometry(0.24, 20, 16);
-  centerSphere.scale(0.8, 0.8, 1.1);
+  const centerSphere = new THREE.SphereGeometry(0.1, 20, 16);
+  centerSphere.scale(0.9, 0.9, 1.05);
   const center = new THREE.Mesh(centerSphere, materials.rosePetal);
-  center.position.z = 0.12;
+  center.position.z = 0.16;
   group.add(center);
 
-  // Inner spiral petal swirl
-  const swirlTorus = new THREE.TorusGeometry(0.14, 0.07, 14, 24, Math.PI * 1.5);
-  const swirl = new THREE.Mesh(swirlTorus, materials.rosePetal);
-  swirl.position.z = 0.22;
-  group.add(swirl);
+  const layers = [
+    { count: 4, radius: 0.09, z: 0.13, width: 0.36, length: 0.42, curl: 0.04, rotation: 0.1 },
+    { count: 6, radius: 0.25, z: 0.04, width: 0.52, length: 0.58, curl: 0.06, rotation: 0.22 },
+    { count: 8, radius: 0.46, z: -0.06, width: 0.62, length: 0.7, curl: 0.08, rotation: 0.34 }
+  ];
 
-  // Layer 1 (Tight inner ring: 3 petals)
-  const innerPetalGeom = createPlumpPetalGeometry({
-    width: 0.42,
-    length: 0.52,
-    depth: 0.06,
-    bevel: 0.04,
-    curl: 0.32,
-    pointiness: 0.3
-  });
+  for (const layer of layers) {
+    const petalGeometry = createRosePetalGeometry({
+      width: layer.width,
+      length: layer.length,
+      depth: 0.065,
+      bevel: 0.035,
+      curl: layer.curl
+    });
 
-  for (let i = 0; i < 3; i++) {
-    const angle = (i / 3) * Math.PI * 2;
-    const petal = new THREE.Mesh(innerPetalGeom, materials.rosePetal);
-    petal.position.set(Math.cos(angle) * 0.24, Math.sin(angle) * 0.24, 0.08);
-    petal.rotation.z = angle - Math.PI / 2;
-    petal.rotation.x = 0.35; // hug inner core
-    group.add(petal);
-  }
-
-  // Layer 2 (Mid ring: 4 petals)
-  const midPetalGeom = createPlumpPetalGeometry({
-    width: 0.54,
-    length: 0.65,
-    depth: 0.07,
-    bevel: 0.045,
-    curl: 0.28,
-    pointiness: 0.35
-  });
-
-  for (let i = 0; i < 4; i++) {
-    const angle = (i / 4) * Math.PI * 2 + (Math.PI / 4);
-    const petal = new THREE.Mesh(midPetalGeom, materials.rosePetal);
-    petal.position.set(Math.cos(angle) * 0.44, Math.sin(angle) * 0.44, 0.02);
-    petal.rotation.z = angle - Math.PI / 2;
-    petal.rotation.x = 0.52; // opening outward
-    group.add(petal);
-  }
-
-  // Layer 3 (Outer ring: 5 large cupping petals)
-  const outerPetalGeom = createPlumpPetalGeometry({
-    width: 0.68,
-    length: 0.78,
-    depth: 0.075,
-    bevel: 0.05,
-    curl: 0.24,
-    pointiness: 0.4
-  });
-
-  for (let i = 0; i < 5; i++) {
-    const angle = (i / 5) * Math.PI * 2 + (Math.PI / 5);
-    const petal = new THREE.Mesh(outerPetalGeom, materials.rosePetal);
-    petal.position.set(Math.cos(angle) * 0.64, Math.sin(angle) * 0.64, -0.06);
-    petal.rotation.z = angle - Math.PI / 2;
-    petal.rotation.x = 0.72; // flared wide
-    group.add(petal);
+    for (let i = 0; i < layer.count; i++) {
+      const angle = (i / layer.count) * Math.PI * 2 + (i % 2) * 0.12;
+      const petal = new THREE.Mesh(petalGeometry, materials.rosePetal);
+      petal.position.set(
+        Math.cos(angle) * layer.radius,
+        Math.sin(angle) * layer.radius,
+        layer.z
+      );
+      petal.rotation.z = angle - Math.PI / 2;
+      petal.rotation.x = layer.rotation;
+      group.add(petal);
+    }
   }
 
   tagFlower(group, 'red-rose', 'red-rose');
@@ -477,7 +538,7 @@ export function createEucalyptus(materials, length = 1.6, pairs = 5) {
     const y = startY + i * step;
     const progress = i / (pairs - 1);
     const radius = 0.18 - progress * 0.04; // taper towards top
-    const leafGeom = createEucalyptusLeafGeometry({ radius, thickness: 0.028 });
+    const leafGeom = createEucalyptusLeafGeometry({ radius, thickness: 0.05 });
 
     // Left leaf
     const leftLeaf = new THREE.Mesh(leafGeom, materials.eucalyptusLeaf);
@@ -495,7 +556,7 @@ export function createEucalyptus(materials, length = 1.6, pairs = 5) {
   }
 
   // Top leaf
-  const topLeafGeom = createEucalyptusLeafGeometry({ radius: 0.12, thickness: 0.025 });
+  const topLeafGeom = createEucalyptusLeafGeometry({ radius: 0.12, thickness: 0.05 });
   const topLeaf = new THREE.Mesh(topLeafGeom, materials.eucalyptusLeaf);
   topLeaf.position.set(0, length + 0.05, 0);
   topLeaf.rotation.x = Math.PI / 4;

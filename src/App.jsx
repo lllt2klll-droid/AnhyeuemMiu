@@ -79,7 +79,7 @@ export function App() {
       {/* Floating Gentle Hint Toast */}
       {showToast && (
         <div className="interaction-hint-toast">
-          ✨ Chạm vào hoa để đọc lời nhắn • Chạm vào nơ để mở thư
+          ✨ Chạm vào hoa nghe anh kể chuyện thương em • Chạm vào nơ đọc lời anh giấu trong tim
         </div>
       )}
 

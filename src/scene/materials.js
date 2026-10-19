@@ -140,16 +140,22 @@ export function createMaterials() {
 
     // Paper Wrapping
     wrappingPaper: new THREE.MeshPhysicalMaterial({
-      color: 0xFBF8F2,
-      roughness: 0.65,
+      color: 0xF9F1F7,
+      roughness: 0.82,
       metalness: 0.0,
-      clearcoat: 0.1,
-      clearcoatRoughness: 0.6,
+      clearcoat: 0.04,
+      clearcoatRoughness: 0.85,
+      sheen: 0.08,
+      sheenRoughness: 0.9,
       side: THREE.DoubleSide
     }),
     wrappingPaperBack: new THREE.MeshPhysicalMaterial({
-      color: 0xF3EEE2,
-      roughness: 0.7,
+      color: 0xF4EAF4,
+      roughness: 0.82,
+      clearcoat: 0.04,
+      clearcoatRoughness: 0.85,
+      sheen: 0.08,
+      sheenRoughness: 0.9,
       side: THREE.DoubleSide
     }),
 
@@ -166,6 +172,13 @@ export function createMaterials() {
       color: 0xFDF4E3,
       roughness: 0.32,
       clearcoat: 0.45
+    }),
+    wrappingRibbon: new THREE.MeshPhysicalMaterial({
+      color: 0xE9CC9F,
+      roughness: 0.3,
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.2,
+      side: THREE.DoubleSide
     }),
 
     // Stem Bottom Bundle

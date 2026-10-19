@@ -52,7 +52,8 @@ html, body {
 
 #root {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   position: relative;
   overflow: hidden;
 }
@@ -213,6 +214,9 @@ html, body {
 
 /* Hint Pill in Center Bottom */
 .bottom-hint-pill {
+  border: 0;
+  font: inherit;
+  color: inherit;
   pointer-events: auto;
   display: flex;
   align-items: center;
@@ -224,6 +228,7 @@ html, body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
+  touch-action: manipulation;
   transition: all 0.3s ease;
   animation: pulseGentle 3s infinite;
 }
@@ -702,8 +707,8 @@ html, body {
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
   .top-header {
-    top: 14px;
-    width: 92%;
+    top: max(12px, env(safe-area-inset-top));
+    width: min(92%, 440px);
   }
 
   .header-title {
@@ -714,24 +719,69 @@ html, body {
     font-size: 0.85rem;
   }
 
+  .interaction-hint-toast {
+    top: max(108px, calc(env(safe-area-inset-top) + 96px));
+    max-width: calc(100% - 32px);
+    text-align: center;
+  }
+
   .floating-controls {
-    bottom: 16px;
-    padding: 0 16px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    row-gap: 10px;
+    padding: 0 max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+  }
+
+  .floating-controls > .control-group:first-child {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .floating-controls > .control-group:last-child {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .control-group {
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+    touch-action: manipulation;
   }
 
   .bottom-hint-pill {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    max-width: calc(100vw - 32px);
+    white-space: nowrap;
     padding: 8px 14px;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
+    line-height: 1.2;
   }
 
   .modal-overlay {
     justify-content: center;
     align-items: flex-end;
-    padding: 14px;
+    padding: 14px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom));
+  }
+
+  .flower-card,
+  .letter-paper {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   .flower-card {
     max-height: 72vh;
+    max-height: 72dvh;
     padding: 22px 20px;
     border-radius: 24px;
   }
@@ -750,6 +800,7 @@ html, body {
   .letter-paper {
     padding: 26px 20px 22px 20px;
     max-height: 84vh;
+    max-height: 84dvh;
   }
 
   .letter-title {
@@ -759,6 +810,26 @@ html, body {
   .letter-content-body {
     font-size: 0.94rem;
     line-height: 1.65;
+  }
+}
+
+@media (max-width: 360px) {
+  .header-title {
+    font-size: 1.1rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.78rem;
+  }
+
+  .floating-controls {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .bottom-hint-pill {
+    padding: 8px 10px;
+    font-size: 0.74rem;
   }
 }
 

@@ -11,13 +11,27 @@ export function setupCameraAndControls(camera, renderer) {
   // Clamping constraints
   controls.minDistance = 3.2;
   controls.maxDistance = 8.5;
-  controls.minPolarAngle = Math.PI * 0.22; // prevent viewing directly from top
-  controls.maxPolarAngle = Math.PI * 0.70; // prevent flipping upside-down or viewing from floor
-  controls.target.set(0, 0.05, 0);
 
   // Default camera sweet spot
-  const defaultCameraPos = new THREE.Vector3(0, 0.35, 5.2);
-  const defaultTarget = new THREE.Vector3(0, 0.05, 0);
+  const defaultCameraPos = new THREE.Vector3();
+  const defaultTarget = new THREE.Vector3(0, -0.3, 0);
+  controls.target.copy(defaultTarget);
+  const baseFov = THREE.MathUtils.degToRad(45);
+
+  function updateViewport(aspect) {
+    camera.aspect = aspect;
+    camera.fov = THREE.MathUtils.radToDeg(
+      2 * Math.atan(Math.tan(baseFov / 2) / Math.min(aspect, 1))
+    );
+    camera.updateProjectionMatrix();
+
+    const isNarrowViewport = aspect < 0.85;
+    const defaultDistance = isNarrowViewport ? 8 : 5.2;
+    controls.maxDistance = isNarrowViewport ? 10.5 : 8.5;
+    defaultCameraPos.set(0, 0, defaultDistance);
+  }
+
+  updateViewport(camera.aspect);
 
   // Camera Animation State (Lerp)
   let isAnimating = false;
@@ -45,9 +59,6 @@ export function setupCameraAndControls(camera, renderer) {
   function focusObject(worldPos, offsetDistance = 3.8) {
     const dir = new THREE.Vector3().subVectors(camera.position, worldPos).normalize();
     const desiredCamPos = new THREE.Vector3().copy(worldPos).addScaledVector(dir, offsetDistance);
-    
-    // Keep Y within pleasing height
-    desiredCamPos.y = Math.max(0.2, Math.min(desiredCamPos.y, 2.5));
 
     animateTo(desiredCamPos, worldPos, 1.0);
   }
@@ -80,6 +91,7 @@ export function setupCameraAndControls(camera, renderer) {
     focusObject,
     animateTo,
     update,
+    updateViewport,
     defaultCameraPos,
     defaultTarget
   };

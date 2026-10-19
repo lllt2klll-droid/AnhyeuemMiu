@@ -40,10 +40,12 @@ export function OverlayUI({
         </div>
 
         {/* Center: Hint & Exploration Progress */}
-        <div
+        <button
+          type="button"
           className="bottom-hint-pill"
           onClick={onOpenLetter}
           title="Chạm vào nơ hoặc bấm vào đây để mở thư"
+          aria-label="Mở lá thư gửi Quỳnh"
         >
           <span>✨</span>
           <span>{SITE_METADATA.introHint}</span>
@@ -52,7 +54,7 @@ export function OverlayUI({
               ({discoveredCount}/{totalFlowers})
             </span>
           )}
-        </div>
+        </button>
 
         {/* Right: Reset Camera & Open Letter */}
         <div className="control-group">

@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { createBouquet } from '../scene/createBouquet.js';
 import { createLighting } from '../scene/createLighting.js';
 import { setupCameraAndControls } from '../scene/cameraControls.js';
+import { updateFlowerSway } from '../scene/createFlowers.js';
+import { updateRibbonMotion } from '../scene/createWrapping.js';
 
 export function BouquetCanvas({
   isNightMode,
@@ -50,8 +52,6 @@ export function BouquetCanvas({
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    // Initial entrance position (slightly further back for intro animation)
-    camera.position.set(0, 0.8, 6.8);
     cameraRef.current = camera;
 
     // 3. Renderer
@@ -61,7 +61,7 @@ export function BouquetCanvas({
       powerPreference: 'high-performance'
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -84,6 +84,7 @@ export function BouquetCanvas({
     controlsRef.current = camSetup;
 
     // Smooth Intro Camera Dolly
+    camera.position.copy(camSetup.defaultCameraPos).add(new THREE.Vector3(0, 0.3, 1.6));
     camSetup.animateTo(camSetup.defaultCameraPos, camSetup.defaultTarget, 2.0);
 
     // 7. Raycaster & Pointer Events
@@ -104,8 +105,8 @@ export function BouquetCanvas({
       const dt = performance.now() - pointerDownPos.current.time;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Only treat as a click if pointer moved less than 8px and within 450ms
-      if (dist < 8 && dt < 450) {
+      // Allow a little extra movement and time for comfortable touch input.
+      if (dist < 12 && dt < 600) {
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -126,7 +127,7 @@ export function BouquetCanvas({
                 // Gently focus camera towards clicked flower
                 const worldPos = new THREE.Vector3();
                 curr.getWorldPosition(worldPos);
-                camSetup.focusObject(worldPos, 4.2);
+                camSetup.focusObject(worldPos, camera.aspect < 1 ? 5.3 : 4.2);
               }
               return;
             }
@@ -172,22 +173,35 @@ export function BouquetCanvas({
       const newW = container.clientWidth;
       const newH = container.clientHeight;
 
-      camera.aspect = newW / newH;
-      camera.updateProjectionMatrix();
+      camSetup.updateViewport(newW / newH);
 
       renderer.setSize(newW, newH);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
     }
 
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
     window.addEventListener('resize', handleResize);
 
     // 9. Animation Loop
     const clock = new THREE.Clock();
+    const wrapping = bouquet.getObjectByName('BouquetWrapping');
+    let previousAzimuth = camSetup.controls.getAzimuthalAngle();
+    let previousPolar = camSetup.controls.getPolarAngle();
+    const bouquetSway = {
+      x: 0,
+      y: 0,
+      z: 0,
+      velocityX: 0,
+      velocityY: 0,
+      velocityZ: 0
+    };
 
     function renderLoop() {
       reqIdRef.current = requestAnimationFrame(renderLoop);
 
       const delta = clock.getDelta();
+      const physicsDelta = Math.min(delta, 0.05);
       const elapsedTime = clock.getElapsedTime();
 
       // Update Lighting & Particles
@@ -196,10 +210,36 @@ export function BouquetCanvas({
       // Camera Controls Update
       camSetup.update(delta);
 
-      // Gentle Bouquet Swaying (Lifelike gentle breeze)
+      const azimuth = camSetup.controls.getAzimuthalAngle();
+      const polar = camSetup.controls.getPolarAngle();
+      const azimuthDelta = Math.atan2(
+        Math.sin(azimuth - previousAzimuth),
+        Math.cos(azimuth - previousAzimuth)
+      );
+      const rotationVelocity = {
+        yaw: delta > 0 ? THREE.MathUtils.clamp(azimuthDelta / delta, -6, 6) : 0,
+        pitch: delta > 0 ? THREE.MathUtils.clamp((polar - previousPolar) / delta, -6, 6) : 0
+      };
+      previousAzimuth = azimuth;
+      previousPolar = polar;
+      updateRibbonMotion(wrapping, physicsDelta, rotationVelocity);
+      updateFlowerSway(bouquet, physicsDelta, rotationVelocity);
+
+      // Damped spring motion makes the bouquet lag behind camera turns, then settle.
+      const spring = 9;
+      const damping = 5.2;
+      bouquetSway.velocityX += (rotationVelocity.pitch * 0.42 - spring * bouquetSway.x - damping * bouquetSway.velocityX) * physicsDelta;
+      bouquetSway.velocityY += (-rotationVelocity.yaw * 0.36 - spring * bouquetSway.y - damping * bouquetSway.velocityY) * physicsDelta;
+      bouquetSway.velocityZ += (rotationVelocity.yaw * 0.26 - spring * bouquetSway.z - damping * bouquetSway.velocityZ) * physicsDelta;
+      bouquetSway.x = THREE.MathUtils.clamp(bouquetSway.x + bouquetSway.velocityX * physicsDelta, -0.16, 0.16);
+      bouquetSway.y = THREE.MathUtils.clamp(bouquetSway.y + bouquetSway.velocityY * physicsDelta, -0.18, 0.18);
+      bouquetSway.z = THREE.MathUtils.clamp(bouquetSway.z + bouquetSway.velocityZ * physicsDelta, -0.12, 0.12);
+
+      // Gentle breeze sway remains, layered under the rotation-driven motion.
       if (bouquet) {
-        bouquet.rotation.y = Math.sin(elapsedTime * 0.9) * 0.035;
-        bouquet.rotation.z = Math.cos(elapsedTime * 0.7) * 0.015;
+        bouquet.rotation.x = bouquetSway.x;
+        bouquet.rotation.y = bouquetSway.y + Math.sin(elapsedTime * 0.9) * 0.035;
+        bouquet.rotation.z = bouquetSway.z + Math.cos(elapsedTime * 0.7) * 0.015;
         bouquet.position.y = -0.1 + Math.sin(elapsedTime * 1.2) * 0.02;
       }
 
@@ -211,6 +251,7 @@ export function BouquetCanvas({
     // Cleanup
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
+      resizeObserver.disconnect();
       window.removeEventListener('resize', handleResize);
 
       domElement.removeEventListener('pointerdown', onPointerDown);
