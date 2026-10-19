@@ -9,7 +9,7 @@ Một website quà tặng 3D tương tác đặc biệt nhân ngày Phụ nữ V
 ## ✨ Điểm nổi bật & Tính năng chính
 
 - 🌸 **Bó hoa 3D tương tác 360°:** Tái hiện chính xác bố cục theo mẫu: Hoa hướng dương trung tâm, hoa loa kèn trắng thanh khiết, nụ loa kèn, hoa hồng đỏ tình yêu, hoa tulip xanh bình yên, tulip hồng dịu dàng, hoa cúc trắng nhỏ bình dị, cành lá bạch đàn (eucalyptus) và giấy gói nơ satin mềm mại.
-- 💌 **Lá thư riêng gửi Quỳnh:** Chạm vào chiếc nơ satin trên bó hoa hoặc nút trái tim để mở lá thư tay đầy cảm xúc kèm hiệu ứng pháo giấy (confetti) ngọt ngào.
+- 💌 **Lá thư 3D riêng gửi Quỳnh:** Chạm vào chiếc nơ satin trên bó hoa hoặc nút trái tim để mở lá thư tay đầy cảm xúc kèm hiệu ứng pháo giấy; kéo phần đầu thư để xoay tự do trong không gian 3D.
 - 🔍 **Khám phá từng bông hoa (Raycasting):** Chạm/click chính xác vào từng bông hoa trong không gian 3D để lắng nghe ý nghĩa và những lời nhắn nhủ chân thành gắn liền với kỷ niệm.
 - ☀️ / 🌙 **Chuyển đổi Ngày & Đêm:** Hiệu ứng chuyển cảnh ánh sáng mượt mà từ bình minh ấm áp sang đêm trăng lãng mạn cùng những đốm sáng đom đóm bay lượn nhẹ nhàng.
 - 🎶 **Giai điệu Music Box êm dịu:** Giai điệu nhẹ nhàng (sử dụng Web Audio API không phụ thuộc file mạng, mặc định tắt để không gây bất ngờ).

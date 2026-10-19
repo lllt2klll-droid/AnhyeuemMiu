@@ -436,6 +436,8 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  perspective: 1200px;
+  perspective-origin: center;
   pointer-events: none;
 }
 
@@ -453,6 +455,8 @@ html, body {
 }
 
 .letter-paper {
+  --letter-rotate-x: 0deg;
+  --letter-rotate-y: 0deg;
   position: relative;
   z-index: 35;
   pointer-events: auto;
@@ -466,9 +470,16 @@ html, body {
   padding: 38px 34px 34px 34px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(220, 195, 175, 0.4);
   animation: letterOpen 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: rotateX(var(--letter-rotate-x)) rotateY(var(--letter-rotate-y));
+  transform-style: preserve-3d;
+  transition: transform 0.24s ease-out;
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.letter-paper.is-dragging {
+  transition: none;
 }
 
 /* Paper subtle border lines */
@@ -515,6 +526,17 @@ html, body {
   gap: 6px;
 }
 
+.letter-rotation-handle {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.letter-paper.is-dragging .letter-rotation-handle {
+  cursor: grabbing;
+}
+
 .letter-stamp {
   font-size: 1.8rem;
   filter: drop-shadow(0 2px 4px rgba(210, 120, 100, 0.3));
@@ -534,6 +556,39 @@ html, body {
   color: #532C1E;
   margin-top: 4px;
   letter-spacing: -0.3px;
+}
+
+.letter-rotation-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 4px;
+  color: #9C7A68;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.letter-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 3px;
+  padding: 0;
+  border: 1px solid rgba(156, 122, 104, 0.25);
+  border-radius: 50%;
+  background: rgba(220, 190, 170, 0.16);
+  color: #7A5747;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.letter-reset-btn:hover {
+  background: rgba(220, 190, 170, 0.4);
+  transform: rotate(-45deg);
 }
 
 .letter-content-body {
@@ -627,11 +682,11 @@ html, body {
 @keyframes letterOpen {
   from {
     opacity: 0;
-    transform: translateY(35px) scale(0.92);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
