@@ -7,7 +7,7 @@ import { FLOWER_MESSAGES } from './data/flowerMessages.js';
 
 export function App() {
   const [isNightMode, setIsNightMode] = useState(false);
-  const [selectedFlowerId, setSelectedFlowerId] = useState(null);
+  const [selectedFlower, setSelectedFlower] = useState(null);
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
   const [discoveredFlowers, setDiscoveredFlowers] = useState(() => new Set());
@@ -15,8 +15,8 @@ export function App() {
 
   const totalFlowerTypes = Object.keys(FLOWER_MESSAGES).length;
 
-  function handleSelectFlower(flowerId) {
-    setSelectedFlowerId(flowerId);
+  function handleSelectFlower(flowerId, flowerObject) {
+    setSelectedFlower({ id: flowerId, object: flowerObject });
     setDiscoveredFlowers((prev) => {
       const next = new Set(prev);
       next.add(flowerId);
@@ -25,7 +25,7 @@ export function App() {
   }
 
   function handleCloseModal() {
-    setSelectedFlowerId(null);
+    setSelectedFlower(null);
   }
 
   function handleToggleNightMode() {
@@ -38,7 +38,7 @@ export function App() {
 
   function handleOpenLetter() {
     setIsLetterOpen(true);
-    setSelectedFlowerId(null); // close flower card if open
+    setSelectedFlower(null); // close flower card if open
   }
 
   function handleCloseLetter() {
@@ -60,7 +60,7 @@ export function App() {
       {/* 3D WebGL Canvas */}
       <BouquetCanvas
         isNightMode={isNightMode}
-        selectedFlowerId={selectedFlowerId}
+        selectedFlower={selectedFlower}
         onSelectFlower={handleSelectFlower}
         onOpenLetter={handleOpenLetter}
         resetTrigger={resetTrigger}
@@ -84,9 +84,9 @@ export function App() {
       )}
 
       {/* Flower Details Modal Card */}
-      {selectedFlowerId && (
+      {selectedFlower && (
         <FlowerModal
-          flowerId={selectedFlowerId}
+          flowerId={selectedFlower.id}
           onClose={handleCloseModal}
         />
       )}

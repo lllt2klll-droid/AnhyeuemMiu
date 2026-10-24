@@ -18,7 +18,10 @@ export function FlowerModal({ flowerId, onClose }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-backdrop-click" onClick={onClose} aria-label="Close modal overlay" />
+      <div className="modal-backdrop-click" aria-hidden="true" />
+      <div className="flower-rotate-hint" aria-hidden="true">
+        Kéo để xoay bông hoa
+      </div>
       <div className="flower-card" role="dialog" aria-modal="true">
         {/* Card Header */}
         <div className="flower-card-header">

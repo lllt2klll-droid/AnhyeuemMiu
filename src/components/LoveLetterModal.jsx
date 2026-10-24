@@ -82,49 +82,56 @@ export function LoveLetterModal({ isOpen, onClose }) {
         role="dialog"
         aria-modal="true"
       >
-        <button
-          className="letter-close-btn"
-          onClick={onClose}
-          aria-label="Đóng thư"
-          title="Đóng thư"
-        >
-          <X size={20} />
-        </button>
+        <div className="letter-paper-back" aria-hidden="true" />
+        <div className="letter-paper-edge letter-paper-edge-left" aria-hidden="true" />
+        <div className="letter-paper-edge letter-paper-edge-right" aria-hidden="true" />
+        <div className="letter-paper-edge letter-paper-edge-top" aria-hidden="true" />
+        <div className="letter-paper-edge letter-paper-edge-bottom" aria-hidden="true" />
+        <div className="letter-paper-front">
+          <button
+            className="letter-close-btn"
+            onClick={onClose}
+            aria-label="Đóng thư"
+            title="Đóng thư"
+          >
+            <X size={20} />
+          </button>
 
-        {/* Letter Header */}
-        <div
-          className="letter-header-decor letter-rotation-handle"
-          onPointerDown={handleRotationStart}
-          onPointerMove={handleRotationMove}
-          onPointerUp={handleRotationEnd}
-          onPointerCancel={handleRotationEnd}
-          onLostPointerCapture={handleRotationEnd}
-        >
-          <div className="letter-stamp">💌</div>
-          <div className="letter-date">{LOVE_LETTER.date}</div>
-          <h2 className="letter-title">{LOVE_LETTER.title}</h2>
-          <div className="letter-rotation-hint">
-            <Move size={15} aria-hidden="true" />
-            <span>Kéo để xoay thư 3D</span>
-            <button
-              className="letter-reset-btn"
-              onClick={handleRotationReset}
-              aria-label="Đưa thư về chính diện"
-              title="Đưa thư về chính diện"
-            >
-              <RotateCcw size={15} />
-            </button>
+          {/* Letter Header */}
+          <div
+            className="letter-header-decor letter-rotation-handle"
+            onPointerDown={handleRotationStart}
+            onPointerMove={handleRotationMove}
+            onPointerUp={handleRotationEnd}
+            onPointerCancel={handleRotationEnd}
+            onLostPointerCapture={handleRotationEnd}
+          >
+            <div className="letter-stamp">💌</div>
+            <div className="letter-date">{LOVE_LETTER.date}</div>
+            <h2 className="letter-title">{LOVE_LETTER.title}</h2>
+            <div className="letter-rotation-hint">
+              <Move size={15} aria-hidden="true" />
+              <span>Kéo để xoay thư 3D</span>
+              <button
+                className="letter-reset-btn"
+                onClick={handleRotationReset}
+                aria-label="Đưa thư về chính diện"
+                title="Đưa thư về chính diện"
+              >
+                <RotateCcw size={15} />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Letter Body */}
-        <div className="letter-content-body">
-          {LOVE_LETTER.paragraphs.map((para, idx) => (
-            <p key={idx} className="letter-paragraph">
-              {para}
-            </p>
-          ))}
-          <div className="letter-signature">{LOVE_LETTER.signature}</div>
+          {/* Letter Body */}
+          <div className="letter-content-body">
+            {LOVE_LETTER.paragraphs.map((para, idx) => (
+              <p key={idx} className="letter-paragraph">
+                {para}
+              </p>
+            ))}
+            <div className="letter-signature">{LOVE_LETTER.signature}</div>
+          </div>
         </div>
       </div>
     </div>

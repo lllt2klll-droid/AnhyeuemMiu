@@ -100,18 +100,18 @@ export function createLighting(scene) {
   };
 
   const nightTheme = {
-    ambientColor: 0x223355,
-    ambientIntensity: 0.95,
-    mainColor: 0xDCE7FF,
-    mainIntensity: 1.35,
-    mainPos: new THREE.Vector3(4, 6, 4),
-    fillColor: 0xF2B37A,
-    fillIntensity: 0.55, // warm lantern fill
-    rimColor: 0x9BB8FF,
-    rimIntensity: 0.85,
-    particleColor: 0x99E265, // glowing fireflies
-    particleSize: 0.22,
-    particleOpacity: 0.8
+    ambientColor: 0x8A8190,
+    ambientIntensity: 1.05,
+    mainColor: 0xFFE0B1,
+    mainIntensity: 1.8,
+    mainPos: new THREE.Vector3(-3, 6, 5),
+    fillColor: 0xF0A88F,
+    fillIntensity: 0.62,
+    rimColor: 0xD7C9FF,
+    rimIntensity: 0.9,
+    particleColor: 0xFFD89A,
+    particleSize: 0.18,
+    particleOpacity: 0.72
   };
 
   let currentProgress = 0; // 0 = day, 1 = night
@@ -168,6 +168,7 @@ export function createLighting(scene) {
       t
     );
     particleMaterial.size = THREE.MathUtils.lerp(dayTheme.particleSize, nightTheme.particleSize, t);
+    particleMaterial.opacity = THREE.MathUtils.lerp(dayTheme.particleOpacity, nightTheme.particleOpacity, t);
     
     // Animate particles
     const posAttr = particleGeometry.attributes.position;
