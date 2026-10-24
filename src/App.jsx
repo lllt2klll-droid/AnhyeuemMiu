@@ -11,7 +11,7 @@ export function App() {
   const [isLetterOpen, setIsLetterOpen] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
   const [discoveredFlowers, setDiscoveredFlowers] = useState(() => new Set());
-  const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState(true);
 
   const totalFlowerTypes = Object.keys(FLOWER_MESSAGES).length;
 
@@ -47,16 +47,15 @@ export function App() {
 
   // Toast hint on mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowToast(true);
-      const hideTimer = setTimeout(() => setShowToast(false), 5000);
-      return () => clearTimeout(hideTimer);
-    }, 1800);
+    const timer = setTimeout(() => setShowToast(false), 7000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className={`app-container ${isNightMode ? 'night-mode' : 'day-mode'}`}>
+    <div
+      className={`app-container ${isNightMode ? 'night-mode' : 'day-mode'}`}
+      onPointerDownCapture={() => setShowToast(false)}
+    >
       {/* 3D WebGL Canvas */}
       <BouquetCanvas
         isNightMode={isNightMode}
@@ -78,8 +77,8 @@ export function App() {
 
       {/* Floating Gentle Hint Toast */}
       {showToast && (
-        <div className="interaction-hint-toast">
-          ✨ Chạm vào hoa nghe anh kể chuyện thương em • Chạm vào nơ đọc lời anh giấu trong tim
+        <div className="interaction-hint-toast" role="status" aria-live="polite">
+          ✨ Kéo để xoay • Chạm vào hoa để khám phá • Chọn ♥ để đọc thư
         </div>
       )}
 

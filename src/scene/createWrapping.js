@@ -17,9 +17,9 @@ export function createWrapping(materials) {
   fanOffsets.forEach((fanOffset, index) => {
     const sheetMaterial = index % 2 === 0 ? materials.wrappingPaperBack : materials.wrappingPaper;
     const sheet = new THREE.Mesh(sheetGeom, sheetMaterial);
-    sheet.position.set(0, -1.68, 0.18);
+    sheet.position.set(0, -1.68, -0.45);
     sheet.rotation.set(
-      THREE.MathUtils.degToRad(-20),
+      THREE.MathUtils.degToRad(-8),
       fanOffset * 0.06,
       fanOffset * 0.1
     );

@@ -26,7 +26,7 @@ export function setupCameraAndControls(camera, renderer) {
     camera.updateProjectionMatrix();
 
     const isNarrowViewport = aspect < 0.85;
-    const defaultDistance = isNarrowViewport ? 8 : 5.2;
+    const defaultDistance = isNarrowViewport ? 8 : 7.6;
     controls.maxDistance = isNarrowViewport ? 10.5 : 8.5;
     defaultCameraPos.set(0, 0, defaultDistance);
   }

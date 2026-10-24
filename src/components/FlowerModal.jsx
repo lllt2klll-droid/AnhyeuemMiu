@@ -22,7 +22,7 @@ export function FlowerModal({ flowerId, onClose }) {
       <div className="flower-rotate-hint" aria-hidden="true">
         Kéo để xoay bông hoa
       </div>
-      <div className="flower-card" role="dialog" aria-modal="true">
+      <div className="flower-card" role="dialog" aria-modal="true" aria-labelledby="flower-dialog-title">
         {/* Card Header */}
         <div className="flower-card-header">
           <div
@@ -56,7 +56,7 @@ export function FlowerModal({ flowerId, onClose }) {
           >
             {flowerData.badge}
           </div>
-          <h2 className="flower-name">{flowerData.name}</h2>
+          <h2 className="flower-name" id="flower-dialog-title">{flowerData.name}</h2>
           <p className="flower-subtitle">“{flowerData.subtitle}”</p>
         </div>
 

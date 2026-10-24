@@ -125,7 +125,7 @@ export function createLilyPetalGeometry({
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
     const y = pos.getY(i);
-    const normY = (y - minY) / spanY;
+    const normY = THREE.MathUtils.clamp((y - minY) / spanY, 0, 1);
 
     // Curl backwards at upper tip
     const curlZ = -Math.pow(normY, 1.8) * curl;
